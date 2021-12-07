@@ -72,27 +72,7 @@ const database = {
     }
   ],
   orders: [
-    {
-      id: 1,
-      sizeId: 2,
-      crustId: 2,
-      toppingId: 1,
-      timestamp: 1620059468223
-    },
-    {
-      id: 2,
-      sizeId: 3,
-      crustId: 1,
-      toppingId: 4,
-      timestamp: 1620059468300
-    },
-    {
-      id: 3,
-      sizeId: 2,
-      crustId: 3,
-      toppingId: 6,
-      timestamp: 1620059468300
-    }
+
   ]
 }
 
@@ -109,6 +89,12 @@ export const getSizes = () => {
   return database.sizes.map( (size) => ({...size}) )
 }
 
+export const getOrders = () => {
+  return database.orders.map( (order) => ({...order}) )
+}
+
+
+
 // ==================================
 // Our transient state
 let orderState = {}
@@ -122,16 +108,25 @@ export const setOrderCrust = (id) => orderState.crustId = id
 // ==================
 // Update the db order state 
 export const addCustomerOrder = () => {
-  const newOrder = {
-    sizeId: orderState.sizeId,
-    crustId: orderState.crustId,
-    toppingId: orderState.toppingId,
-    timestamp: Date.now(),
-    id: calcId(database.orders)
+
+  if (orderState.sizeId && orderState.crustId && orderState.toppingId ) { 
+    const newOrder = {
+      sizeId: orderState.sizeId,
+      crustId: orderState.crustId,
+      toppingId: orderState.toppingId,
+      timestamp: Date.now(),
+      id: calcId(database.orders)
+    }
+  
+    database.orders.push(newOrder)
+    // alert anything that's listening to the fact that our db has been updated
+    document.dispatchEvent(new CustomEvent("dbStateChanged"))
+  
+    orderState = {}
+  } else {
+    window.alert("please select one ingredient per menu selection")
   }
 
-  database.orders.push(newOrder)
-  orderState = {}
 }
 
 const calcId = (arr) => {
