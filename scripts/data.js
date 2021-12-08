@@ -71,8 +71,36 @@ const database = {
       price: 12
     }
   ],
+  orderToppings: [
+    {
+      id: 1,
+      toppingId: 2,
+      orderId: 1
+    },
+    {
+      id: 2,
+      toppingId: 5,
+      orderId: 1
+    },
+    {
+      id: 3,
+      toppingId: 1,
+      orderId: 2
+    }
+  ],
   orders: [
-
+    {
+      id: 1,
+      crustId: 1,
+      sizeId: 3,
+      timestamp: 1638976763958
+    },
+    {
+      id: 2,
+      crustId: 2,
+      sizeId: 1,
+      timestamp: 1638976763958
+    }
   ]
 }
 
@@ -92,7 +120,9 @@ export const getSizes = () => {
 export const getOrders = () => {
   return database.orders.map( (order) => ({...order}) )
 }
-
+export const getOrderToppings = () => {
+  return database.orderToppings.map( (orderTopping) => ({...orderTopping}) )
+}
 
 
 // ==================================
@@ -140,3 +170,19 @@ const calcId = (arr) => {
   const newId = lastItemId + 1
   return newId
 }
+
+//TODO:
+// Allow users to select multiple toppings for an order
+// FIRST THING TO DO! -- Update the ERD
+// Toppings Module:
+// Change radio btns to checkboxes
+// Orders Module:
+// Change the structure the HTML for displaying orders ( to list multiple toppings )
+// Change how the total price is calculated
+// Data.JS
+// Update the data structure
+// Write some new getter and setter functions ( TBD )
+// Update getOrders
+// Update addCustomerOrder
+
+
