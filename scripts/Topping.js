@@ -13,7 +13,7 @@ export const Topping = () => {
   const toppingsHTML = toppings.map( (topping) => {
     return `
       <li class="choice-list-item topping--list-item">
-        <input type="radio" value="topping--${topping.id}" name="topping"> ${topping.name}
+        <input type="checkbox" value="topping--${topping.id}" name="topping"> ${topping.name}
       </li>
       <div class="price">
         Price: $${topping.price.toFixed(2)}

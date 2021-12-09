@@ -84,7 +84,7 @@ const database = {
     },
     {
       id: 3,
-      toppingId: 1,
+      toppingId: 2,
       orderId: 2
     }
   ],
@@ -127,11 +127,17 @@ export const getOrderToppings = () => {
 
 // ==================================
 // Our transient state
-let orderState = {}
+let orderState = {toppings: []}
 
+// If an id is already in the orderState.toppings Array, instead of adding the id to create duplicates, we need to remove the id from the array
 export const setOrderTopping = (id) => { 
-  orderState.toppingId = id
+  if ( orderState.toppings.includes(id) ) {
+    orderState.toppings = orderState.toppings.filter( (toppingId) => toppingId !== id )
+  } else {
+    orderState.toppings.push(id)
+  }
 }
+
 export const setOrderSize = (id) => orderState.sizeId = id
 export const setOrderCrust = (id) => orderState.crustId = id
 
@@ -139,20 +145,33 @@ export const setOrderCrust = (id) => orderState.crustId = id
 // Update the db order state 
 export const addCustomerOrder = () => {
 
-  if (orderState.sizeId && orderState.crustId && orderState.toppingId ) { 
+  if (orderState.sizeId && orderState.crustId && orderState.toppings.length > 0 ) { 
+
     const newOrder = {
       sizeId: orderState.sizeId,
       crustId: orderState.crustId,
-      toppingId: orderState.toppingId,
       timestamp: Date.now(),
       id: calcId(database.orders)
     }
   
     database.orders.push(newOrder)
+
+    // Now, we need to create a record or records of the related toppings for this order
+    for ( const toppingId of orderState.toppings ) {
+      // make an orderToppings object and add it to our db
+      const newOrderTopping = {
+        id: calcId(database.orderToppings),
+        toppingId: toppingId,
+        orderId: newOrder.id
+      }
+
+      database.orderToppings.push(newOrderTopping)
+    }
     // alert anything that's listening to the fact that our db has been updated
     document.dispatchEvent(new CustomEvent("dbStateChanged"))
   
-    orderState = {}
+    orderState = {toppings: []}
+
   } else {
     window.alert("please select one ingredient per menu selection")
   }
@@ -173,7 +192,7 @@ const calcId = (arr) => {
 
 //TODO:
 // Allow users to select multiple toppings for an order
-// FIRST THING TO DO! -- Update the ERD
+// FIRST THING TO DO! -- Update the ERD 
 // Toppings Module:
 // Change radio btns to checkboxes
 // Orders Module:
@@ -184,5 +203,3 @@ const calcId = (arr) => {
 // Write some new getter and setter functions ( TBD )
 // Update getOrders
 // Update addCustomerOrder
-
-
